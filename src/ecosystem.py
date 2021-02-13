@@ -12,8 +12,8 @@ from plotly.graph_objs import Figure
 class Ecosystem:
     def __init__(self,
                  market_def: Dict,
-                 demand_def: Dict,
-                 supply_def: Dict):
+                 supply_def: Dict,
+                 demand_def: Dict):
         self.market_penetration = None
         self.market_penetration_by_consumer = None
         self.market_size = None
@@ -29,8 +29,8 @@ class Ecosystem:
         self.consumers = None
 
         self.market_def = market_def
-        self.demand_def = demand_def
         self.supply_def = supply_def
+        self.demand_def = demand_def
 
         self.solver = pywraplp.Solver.CreateSolver('SCIP')
 
