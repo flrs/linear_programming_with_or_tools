@@ -1,13 +1,13 @@
 """Ecosystem Class"""
 
 from pathlib import Path
+from pprint import pprint
 from typing import Dict, Union
 
 import pandas as pd
 import plotly.express as px
 from ortools.linear_solver import pywraplp
 from plotly.graph_objs import Figure
-from pprint import pprint
 
 
 class Ecosystem:
@@ -133,24 +133,25 @@ class Ecosystem:
             captures_by_consumer = {consumer_name: constraint.GetCoefficient(consumer) * consumer.solution_value() for
                                     consumer_name, consumer in self.consumers.items()}
             self.supply_captures_by_supply_and_consumer[constraint_name] = captures_by_consumer
-            self.supply_captures_by_supply_and_consumer[constraint_name]['unused'] = self.supply_def[
-                                                                                         constraint_name] - sum(
-                self.supply_captures_by_supply_and_consumer[constraint_name].values())
+            self.supply_captures_by_supply_and_consumer[constraint_name]['unused'] = \
+                self.supply_def[constraint_name] \
+                - sum(self.supply_captures_by_supply_and_consumer[constraint_name].values())
 
-            self.supply_utilization_by_supply[constraint_name] = (sum(
-                self.supply_captures_by_supply_and_consumer[constraint_name].values()) -
-                                                                  self.supply_captures_by_supply_and_consumer[
-                                                                      constraint_name]['unused']) / sum(
-                self.supply_captures_by_supply_and_consumer[constraint_name].values())
-        self.supply_utilization = 1 - sum([supply_captures['unused'] for supply_name, supply_captures in
-                                           self.supply_captures_by_supply_and_consumer.items()]) / sum(
-            [self.supply_def[supply_name] for supply_name in self.supply_captures_by_supply_and_consumer.keys()])
+            self.supply_utilization_by_supply[constraint_name] = \
+                (sum(self.supply_captures_by_supply_and_consumer[constraint_name].values())
+                 - self.supply_captures_by_supply_and_consumer[constraint_name]['unused']) \
+                / sum(self.supply_captures_by_supply_and_consumer[constraint_name].values())
+        self.supply_utilization = \
+            1 - sum([supply_captures['unused']
+                     for supply_name, supply_captures in self.supply_captures_by_supply_and_consumer.items()])\
+            / sum([self.supply_def[supply_name] for supply_name in self.supply_captures_by_supply_and_consumer.keys()])
 
         self.supply_utilization_by_consumer = {}
         for consumer_name in self.consumers.keys():
-            self.supply_utilization_by_consumer[consumer_name] = sum(
-                [self.supply_captures_by_supply_and_consumer[supply_name][consumer_name] for supply_name in
-                 self.supply_captures_by_supply_and_consumer.keys()]) / self.supply_size
+            self.supply_utilization_by_consumer[consumer_name] = \
+                sum([self.supply_captures_by_supply_and_consumer[supply_name][consumer_name]
+                     for supply_name in self.supply_captures_by_supply_and_consumer.keys()]) \
+                / self.supply_size
         self.supply_utilization_by_consumer['unused'] = 1 - sum(self.supply_utilization_by_consumer.values())
 
         if print_solution:
