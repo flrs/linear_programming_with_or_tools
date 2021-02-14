@@ -7,6 +7,7 @@ import pandas as pd
 import plotly.express as px
 from ortools.linear_solver import pywraplp
 from plotly.graph_objs import Figure
+from pprint import pprint
 
 
 class Ecosystem:
@@ -39,8 +40,8 @@ class Ecosystem:
         try:
             return Ecosystem(
                 market_def=dict_['market'],
-                demand_def=dict_['demand'],
-                supply_def=dict_['supply'])
+                supply_def=dict_['supply'],
+                demand_def=dict_['demand'])
         except KeyError:
             raise KeyError(f'If you create an Ecosystem from a dictionary, that dictionary needs to include the keys '
                            '"market", "demand" and "supply". The dictionary you supplied contains the following keys: '
@@ -76,6 +77,14 @@ class Ecosystem:
         self._test_suppliers_exist()
         self._test_supplier_geq_zero()
         self._test_consumers_in_market()
+
+    def print_definition(self):
+        print('-- Market --')
+        pprint(self.market_def)
+        print('-- Supply --')
+        pprint(self.supply_def)
+        print('-- Demand --')
+        pprint(self.demand_def)
 
     def solve(self,
               print_solution: bool = True):
@@ -146,7 +155,6 @@ class Ecosystem:
 
         if print_solution:
             self.print_solution()
-        return status
 
     def print_solution(self):
         print('-- SOLUTION ––')
